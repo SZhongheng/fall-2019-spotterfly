@@ -18,7 +18,8 @@ app.use(bodyParser.json());
 //const local = "mongodb://localhost/playground";
 app.use(express.json());
 
-const uri1 = process.env.ATLAS_URI;
+//const uri1 = process.env.ATLAS_URI;
+const uri1= "mongodb+srv://sunzh95:justkidding@cluster0.t9xrm.mongodb.net/test";
 const router = express.Router();
 mongoose.connect(uri1, {
   useUnifiedTopology: true,
@@ -214,7 +215,7 @@ app.get("/callback", function(req, res) {
               });
 
               async function createPlaylist() {
-                playlist = new playlistData({
+                let playlist = new playlistData({
                   id: userID,
                   songID: songs,
                   displayName: userDisplay,
@@ -226,7 +227,7 @@ app.get("/callback", function(req, res) {
                   artistlink: artistLink
                 });
                 const result = await playlist.save();
-                //console.log(result);
+                console.log(result);
               }
               createPlaylist();
             });

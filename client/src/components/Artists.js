@@ -222,7 +222,7 @@ class Artists extends Component {
 
           <br></br>
           <main>
-            <div class="wrapper">
+            <div className="wrapper">
               <a
                 href={`https://open.spotify.com/user/${this.state.id}`}
                 target="_blank"
