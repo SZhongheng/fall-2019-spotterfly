@@ -1,79 +1,33 @@
-# Node.js Express Web App to Linux on Azure
-# Build a Node.js Express app and deploy it to Azure as a Linux web app.
-# Add steps that analyze code, save build artifacts, deploy, and more:
-# https://docs.microsoft.com/azure/devops/pipelines/languages/javascript
-
 trigger:
 - main
 
 variables:
+  appDir: client
 
-  # Azure Resource Manager connection created during pipeline creation
-  azureSubscription: '2e39e410-1a3b-4041-b457-4675abaca607'
+pool:
+  vmImage: 'ubuntu-latest'
+
+steps:
+- task: NodeTool@0
+  inputs:
+    versionSpec: '12.x'
+  displayName: 'Install Node.js'
   
-  # Web app name
-  webAppName: 'spotterfly'
-  
-  # Environment name
-  environmentName: 'spotterfly'
+- task: Npm@1
+  inputs:
+    command: 'install'
+    workingDir: '$(appDir)'
+  displayName: npm install
 
-  # Agent VM image name
-  vmImageName: 'ubuntu-latest'
+- script: npm start
+  workingDirectory: $(appDir)
+  displayName: npm build
 
-stages:
-- stage: Build
-  displayName: Build stage
-  jobs:  
-  - job: Build
-    displayName: Build
-    pool:
-      vmImage: $(vmImageName)
-      
-    steps:
-    - task: NodeTool@0
-      inputs:
-        versionSpec: '10.x'
-      displayName: 'Install Node.js'
 
-    - script: |
-        cd client
-        npm install
-        npm run build --if-present
-        npm run test --if-present
-      displayName: 'npm install, build and test'
-      
-    - task: ArchiveFiles@2
-      displayName: 'Archive files'
-      inputs:
-        rootFolderOrFile: '$(System.DefaultWorkingDirectory)'
-        includeRootFolder: false
-        archiveType: zip
-        archiveFile: $(Build.ArtifactStagingDirectory)/$(Build.BuildId).zip
-        replaceExistingArchive: true
-
-    - upload: $(Build.ArtifactStagingDirectory)/$(Build.BuildId).zip
-      artifact: drop
-
-- stage: Deploy
-  displayName: Deploy stage
-  dependsOn: Build
-  condition: succeeded()
-  jobs:
-  - deployment: Deploy
-    displayName: Deploy
-    environment: $(environmentName)
-    pool: 
-      vmImage: $(vmImageName)
-    strategy:
-      runOnce:
-        deploy:
-          steps:            
-          - task: AzureWebApp@1
-            displayName: 'Azure Web App Deploy: spotterfly'
-            inputs:
-              azureSubscription: $(azureSubscription)
-              appType: webAppLinux
-              appName: $(webAppName)
-              runtimeStack: 'NODE|10.10'
-              package: $(Pipeline.Workspace)/drop/$(Build.BuildId).zip
-              startUpCommand : "pm2 serve /home/site/wwwroot --no-daemon"
+- task: AzureRmWebAppDeployment@4
+  inputs:
+    ConnectionType: 'AzureRM'
+    azureSubscription: 'Azure subscription 1 (ca94896a-2ad6-4c15-998f-06a093ec4590)'
+    appType: 'webAppLinux'
+    WebAppName: 'spotterfly'
+    packageForLinux: '$(appDir)/dist/*'
