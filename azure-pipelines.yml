@@ -76,4 +76,4 @@ stages:
               appName: $(webAppName)
               runtimeStack: 'NODE|10.10'
               package: $(Pipeline.Workspace)/drop/$(Build.BuildId).zip
-              startUpCommand : "cd client & npm install & npm start"
+              startUpCommand : "pm2 serve /home/site/wwwroot --no-daemon"
