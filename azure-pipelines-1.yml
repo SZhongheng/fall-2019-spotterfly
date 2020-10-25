@@ -67,5 +67,6 @@ stages:
               StartupCommand: 'npm run start'
               ScriptType: 'Inline Script'
               InlineScript: |
+                cd client
                 npm install
                 npm run build --if-present
