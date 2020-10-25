@@ -19,9 +19,9 @@ steps:
     workingDir: '$(appDir)'
   displayName: npm install
 
-- script: npm start
+- script: npm run build
   workingDirectory: $(appDir)
-  displayName: npm build
+  displayName: npm run build
 
 
 - task: AzureRmWebAppDeployment@4
