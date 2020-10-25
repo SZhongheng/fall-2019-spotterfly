@@ -30,4 +30,4 @@ steps:
     azureSubscription: 'Azure subscription 1 (ca94896a-2ad6-4c15-998f-06a093ec4590)'
     appType: 'webAppLinux'
     WebAppName: 'spotterfly'
-    packageForLinux: '$(appDir)/dist/*'
+    packageForLinux: '$(appDir)'
